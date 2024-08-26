@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">ThiTracNghiem</string>
+    <string name="qmk"> <u>Quên mật khẩu?</u> </string>
+    <string name="copy_id"> <u>Sao chép ID</u> </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="list_mon_hoc">
+        <item>Tiếng Anh</item>
+        <item>Toán</item>
+        <item>Hóa học</item>
+        <item>Vật lý</item>
+        <item>Địa lý</item>
+        <item>Lịch sử</item>
+        <item>Sinh học</item>
+        <item>GDCD</item>
+    </string-array>
+
+    <string-array name="list_lop">
+        <item>Lớp 12</item>
+        <item>Lớp 11</item>
+        <item>Lớp 10</item>
+        <item>Lớp 9</item>
+        <item>Lớp 8</item>
+        <item>Lớp 7</item>
+        <item>Lớp 6</item>
+
+    </string-array>
+</resources>

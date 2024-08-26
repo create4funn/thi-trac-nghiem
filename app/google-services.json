@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "540816680178",
+    "project_id": "thitracnghiem-85f02",
+    "storage_bucket": "thitracnghiem-85f02.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540816680178:android:9556520334c5722c3b9c6b",
+        "android_client_info": {
+          "package_name": "com.example.thitracnghiem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIkU_DAwtaX7k42w7qWp4nleOn1KlfwUU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

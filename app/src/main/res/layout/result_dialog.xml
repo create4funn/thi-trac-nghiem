@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/huy_chuong"
+        android:layout_gravity="center_horizontal"
+        />
+    <TextView
+        android:id="@+id/tvScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 điểm"
+        android:textColor="@color/black"
+        android:textSize="40dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        >
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/green_check"/>
+        <TextView
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+
+            android:text="Số câu đúng:"
+            android:textColor="@color/black"
+            android:textSize="22dp"
+            android:layout_gravity="center_vertical"
+            />
+
+        <TextView
+            android:text="2"
+            android:textSize="22dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvTrue"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:padding="8dp"
+            android:src="@drawable/alarm_clock_icon"/>
+        <TextView
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:text="Thời gian:"
+            android:textColor="@color/black"
+            android:textSize="22dp"
+            android:layout_gravity="center_vertical"
+            />
+
+        <TextView
+            android:text="2"
+            android:textSize="22dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvThoiGian"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:text="Đáp án"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnAnswer"
+            android:layout_weight="1"
+            android:backgroundTint="#15B11B"
+            android:layout_marginRight="4dp"/>
+
+        <Button
+            android:text="Lưu điểm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnSaveScore"
+            android:layout_weight="1"
+            android:backgroundTint="#FF9800"
+            android:layout_marginHorizontal="4dp"/>
+
+        <Button
+            android:text="Thoát"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnExit"
+            android:layout_weight="1"
+            android:backgroundTint="#F32020"
+            android:layout_marginLeft="4dp"/>
+    </LinearLayout>
+
+
+</LinearLayout>

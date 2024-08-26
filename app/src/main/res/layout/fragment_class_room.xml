@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".Fragment.ClrStudentFragment"
+    android:layout_margin="10dp"
+    >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/edtClassSearch"
+            android:layout_width="300dp"
+            android:layout_height="55dp"
+            android:hint="Tìm kiếm lớp học"
+            android:textSize="20dp"
+            android:padding="16dp"
+            android:background="@drawable/rounded_corner"
+            />
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            app:cardCornerRadius="15dp"
+            android:layout_marginLeft="10dp">
+            <ImageButton
+                android:id="@+id/btnSearch"
+                android:layout_width="50dp"
+                android:layout_height="52dp"
+                android:src="@drawable/baseline_search_24"
+                android:background="#2196F3"/>
+        </androidx.cardview.widget.CardView>
+
+
+
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvStudentClass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        />
+</LinearLayout>
