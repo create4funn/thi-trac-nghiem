@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
+    android:padding="8dp"
     android:orientation="vertical"
-    android:background="@drawable/background_item2"
+    android:background="@drawable/background_item"
     >
     <TextView
         android:id="@+id/tv_examTitle"
@@ -52,7 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_margin="5dp"
+        android:layout_marginTop="8dp"
         >
 
         <TextView
@@ -80,56 +81,5 @@
             android:text="Làm bài"
             android:drawableLeft="@drawable/baseline_directions_24"/>
     </LinearLayout>
-<!--    <TextView-->
-<!--        android:id="@+id/tv_examName"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="10dp"-->
-<!--        android:text="bài kiểm tra"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:textSize="30dp"-->
-<!--        android:textStyle="bold"-->
-
-<!--        android:layout_marginTop="10dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/tv_SoCau"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="dsff"-->
-<!--        android:textSize="20dp"-->
-<!--        android:textColor="#0B6E4F"-->
-<!--        android:layout_marginTop="10dp"-->
-<!--        android:layout_marginLeft="20dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv_examName" />-->
-
-
-<!--    <TextView-->
-<!--        android:id="@+id/tv_SoPhut"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="10dp"-->
-<!--        android:layout_marginLeft="20dp"-->
-<!--        android:text="dsff"-->
-<!--        android:textColor="#D31818"-->
-<!--        android:textSize="20dp"-->
-<!--        app:layout_constraintStart_toEndOf="@id/tv_SoCau"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv_examName" />-->
-
-
-<!--    <TextView-->
-<!--        android:id="@+id/imgDowload"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="15dp"-->
-<!--        android:text="Lưu"-->
-<!--        android:textSize="20dp"-->
-<!--        android:drawableRight="@drawable/baseline_arrow_downward_24"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
 </LinearLayout>

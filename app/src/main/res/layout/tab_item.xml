@@ -35,7 +35,7 @@
             android:id="@+id/edtAnswer1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="lựa chọn 1"
+            android:hint="đáp án A"
             android:padding="10dp"
             android:inputType="text"
             android:background="@drawable/rounded_corner"
@@ -45,7 +45,7 @@
             android:id="@+id/edtAnswer2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="lựa chọn 2"
+            android:hint="đáp án B"
             android:padding="10dp"
             android:inputType="text"
             android:background="@drawable/rounded_corner"
@@ -55,7 +55,7 @@
             android:id="@+id/edtAnswer3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="lựa chọn 3"
+            android:hint="đáp án C"
             android:inputType="text"
             android:padding="10dp"
             android:background="@drawable/rounded_corner"
@@ -65,7 +65,7 @@
             android:id="@+id/edtAnswer4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="lựa chọn 4"
+            android:hint="đáp án D"
             android:padding="10dp"
             android:inputType="text"
             android:background="@drawable/rounded_corner"
@@ -79,14 +79,45 @@
             android:textStyle="bold"
             android:textColor="@color/black"
             android:layout_marginLeft="10dp"/>
-        <EditText
-            android:id="@+id/edtCorrectAnswer"
+
+        <RadioGroup
+            android:id="@+id/rgCorrect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Đáp án đúng"
-            android:padding="10dp"
-            android:inputType="text"
-            android:background="@drawable/rounded_corner"
-            android:layout_margin="10dp"/>
+            android:orientation="horizontal"
+            >
+                <RadioButton
+                    android:id="@+id/buttonA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A"
+                    android:textStyle="bold"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="20dp"/>
+                <RadioButton
+                    android:id="@+id/buttonB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="B"
+                    android:textStyle="bold"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="20dp"/>
+                <RadioButton
+                    android:id="@+id/buttonC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="C"
+                    android:textStyle="bold"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="20dp"/>
+                <RadioButton
+                    android:id="@+id/buttonD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="D"
+                    android:textStyle="bold"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="20dp"/>
+        </RadioGroup>
 
 </LinearLayout>

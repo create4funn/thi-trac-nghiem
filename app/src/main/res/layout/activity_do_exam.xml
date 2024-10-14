@@ -53,7 +53,7 @@
                 android:background="#ffffff" />
 
             <TextView
-                android:id="@+id/tvSubmit"
+                android:id="@+id/btnSubmit"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -201,7 +201,7 @@
 
         <TableRow>
             <TextView
-                android:id="@+id/txtBack"
+                android:id="@+id/btnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -223,7 +223,7 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/txtNext"
+                android:id="@+id/btnNext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"

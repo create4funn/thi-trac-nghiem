@@ -1,13 +1,16 @@
 package com.example.thitracnghiem.Activity
 
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.auth0.android.jwt.JWT
 import com.example.thitracnghiem.*
 import com.example.thitracnghiem.Fragment.*
 import com.example.thitracnghiem.databinding.ActivityMainBinding
@@ -16,40 +19,53 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
+    private var role = ""
+    private var username = ""
+    private var userId = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val user = FirebaseAuth.getInstance().currentUser
-        val db = FirebaseFirestore.getInstance()
-        var role = ""
-        db.collection("users").document(user!!.uid).get()
-            .addOnSuccessListener { documentSnapshot ->
-                role = documentSnapshot.getString("Role").toString()
-            }
+        getRole()
         if (!isNetworkAvailable(this)){
             replaceFragment(SavedExamFragment())
             binding.bottomNav.selectedItemId = R.id.save
             Toast.makeText(this, "Offline", Toast.LENGTH_SHORT).show()
         }else{
-            replaceFragment(HomeFragment())
+            val homeFragment = HomeFragment()
+            val bundle = Bundle()
+            bundle.putString("username_key", username) // Gửi username vào Bundle
+            homeFragment.arguments = bundle
+            replaceFragment(homeFragment)
         }
-
 
         binding.bottomNav.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.home -> replaceFragment(HomeFragment())
+                R.id.home -> {
+                    val homeFragment = HomeFragment()
+                    val bundle = Bundle()
+                    bundle.putString("username_key", username)
+                    homeFragment.arguments = bundle
+                    replaceFragment(homeFragment)
+                }
                 R.id.classroom -> {
-                    if (role == "Sinh viên") {
+                    if (role == "1") {
                         replaceFragment(ClrStudentFragment())
-                    } else if (role == "Giáo viên") {
+                    } else if (role == "2") {
                         replaceFragment(ClrTeacherFragment())
                     }
                 }
                 R.id.save -> replaceFragment(SavedExamFragment())
-                R.id.account -> replaceFragment(AccountFragment())
-
+                R.id.account -> {
+                    val accountFragment = AccountFragment()
+                    val bundle = Bundle()
+                    bundle.putString("userId", userId)
+                    accountFragment.arguments = bundle
+                    replaceFragment(accountFragment)
+                }
+                R.id.dictionary -> replaceFragment(DictionaryFragment())
             }
             true
         }
@@ -58,6 +74,27 @@ class MainActivity : AppCompatActivity() {
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.frame_layout, fragment).commit()
     }
+
+    private fun getRole(){
+        val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        role = sharedPref.getString("role", null).toString()
+        username = sharedPref.getString("username", null).toString()
+        userId = sharedPref.getString("userId", null).toString()
+    }
+
+    fun logout(){
+
+        val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            clear() // Xóa tất cả dữ liệu trong SharedPreferences
+            apply() // Áp dụng thay đổi
+        }
+
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
 
     fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager =

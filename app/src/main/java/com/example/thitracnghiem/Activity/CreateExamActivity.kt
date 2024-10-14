@@ -7,7 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.example.thitracnghiem.R
 
-class CreateExamActivity : AppCompatActivity(), BottomSheetFragment.OnExamSavedListener {
+class CreateExamActivity : AppCompatActivity() {
     private lateinit var edtExamName: EditText
     private lateinit var edtDuration: EditText
     private lateinit var edtNumOfQues: EditText
@@ -23,14 +23,14 @@ class CreateExamActivity : AppCompatActivity(), BottomSheetFragment.OnExamSavedL
 
 
         val btnCreateQues = findViewById<Button>(R.id.btnCreateQues)
-        val idClass = intent.getStringExtra("id")
+        val class_id = intent.getIntExtra("class_id", 0)
         btnCreateQues.setOnClickListener {
             if (validateInputs()) {
                 // Proceed with your logic here
                 val numOfQues = edtNumOfQues.text.toString().toInt()
                 val examName = edtExamName.text.toString()
                 val duration = edtDuration.text.toString().toInt()
-                val bottomSheet = BottomSheetFragment(numOfQues,examName, duration, idClass.toString())
+                val bottomSheet = BottomSheetFragment(null,numOfQues,examName, duration, class_id, null, null, null,0)
                 bottomSheet.show(supportFragmentManager, bottomSheet.tag)
 
             } else {
@@ -47,7 +47,4 @@ class CreateExamActivity : AppCompatActivity(), BottomSheetFragment.OnExamSavedL
         return examName.isNotEmpty() && duration.isNotEmpty() && numOfQues.isNotEmpty()
     }
 
-    override fun onExamSaved() {
-        finish()
-    }
 }

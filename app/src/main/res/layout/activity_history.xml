@@ -40,7 +40,7 @@
             android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             />
         <TextView
             android:text="Điểm số"
@@ -56,6 +56,7 @@
             android:text="Thời gian"
             android:textStyle="bold"
             android:textSize="16sp"
+            android:gravity="center"
             android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,5 +69,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <Button
+        android:id="@+id/btnExcel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="xuất excel"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

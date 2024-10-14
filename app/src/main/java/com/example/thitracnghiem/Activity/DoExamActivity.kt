@@ -1,6 +1,7 @@
 package com.example.thitracnghiem.Activity
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -8,19 +9,25 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.auth0.android.jwt.JWT
+import com.example.thitracnghiem.ApiService.HistoryService
+import com.example.thitracnghiem.ApiService.QuestionService
+import com.example.thitracnghiem.ApiService.RetrofitClient
 import com.example.thitracnghiem.R
-import com.example.thitracnghiem.adapter.CheckAnswerAdapter
+import com.example.thitracnghiem.adapter.AnswerAdapter
 import com.example.thitracnghiem.helper.ExamDatabaseHelper
+import com.example.thitracnghiem.model.HistoryItem
 import com.example.thitracnghiem.model.QuestionItem
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class DoExamActivity : AppCompatActivity() {
-    private lateinit var db: FirebaseFirestore
-    private val questionsList = mutableListOf<QuestionItem>()
+
+    private var questionsList: List<QuestionItem> = emptyList()
 
     private lateinit var tvNum: TextView
     private lateinit var tvQuestion: TextView
@@ -36,19 +43,42 @@ class DoExamActivity : AppCompatActivity() {
     private lateinit var timer: TextView
     private lateinit var btnSubmit: TextView
     private var currentQuestionIndex = 0
-    private val userAnswers = mutableListOf<Int?>()
-    private var sumQuestion : Int = 0
+    private var userAnswers = mutableListOf<Int?>()
+    private var sumQuestion: Int = 0
     private lateinit var countDownTimer: CountDownTimer
     private var totalTime: Long = 0
     private var timeLeft: Long = 0
-    private var username : String = ""
+    private var exam_id = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_do_exam)
 
         initView()
+        exam_id = intent.getIntExtra("exam_id", -1)
 
+        val check = intent.getIntExtra("check",0)
+        if (check == 0) {
+            getQuestionApi(exam_id)
+        } else {
+            val dbHelper = ExamDatabaseHelper(this)
+            questionsList = dbHelper.getQuestionsForExam(exam_id)
+
+            Log.d("abc", "$questionsList")
+            sumQuestion = questionsList.size
+
+//            questionsList.addAll(offlineQuestions)
+            for (i in questionsList.indices) {
+                userAnswers.add(null)
+            }
+            if (questionsList.isNotEmpty()) {
+                displayQuestion(questionsList[0])
+            }
+        }
+
+        val duration = intent.getIntExtra("time", 0)
+        totalTime = duration * 60000L
+        startTimer(totalTime)
 
         btnNext.setOnClickListener {
             displayNextQuestion()
@@ -56,14 +86,13 @@ class DoExamActivity : AppCompatActivity() {
         btnBack.setOnClickListener {
             displayPreviousQuestion()
         }
+
         radA.setOnClickListener { saveUserAnswer() }
         radB.setOnClickListener { saveUserAnswer() }
         radC.setOnClickListener { saveUserAnswer() }
         radD.setOnClickListener { saveUserAnswer() }
-
-        btnSubmit.setOnClickListener{
-//            val dialog = SubmitDialogFragment(questionsList, userAnswers)
-//            dialog.show(supportFragmentManager, "SubmitDialog")
+//
+        btnSubmit.setOnClickListener {
 
             val dialog = Dialog(this)
             dialog.setContentView(R.layout.check_answer_dialog)
@@ -74,8 +103,8 @@ class DoExamActivity : AppCompatActivity() {
             lp.height = WindowManager.LayoutParams.WRAP_CONTENT
             dialog.window!!.attributes = lp
 
-            // truyền giá arr_Ques cho dialog
-            val answerAdapter = CheckAnswerAdapter(this, questionsList, userAnswers)
+            //
+            val answerAdapter = AnswerAdapter(this, questionsList, userAnswers)
             val gvLsQuestion = dialog.findViewById<GridView>(R.id.gridview)
             gvLsQuestion.adapter = answerAdapter
 
@@ -85,114 +114,140 @@ class DoExamActivity : AppCompatActivity() {
 
             btnFinish.setOnClickListener {
                 dialog.dismiss()
-                countDownTimer.cancel()
-                val correctAnswers = calculateResults()
-                val totalQuestions = questionsList.size
-                var temp = correctAnswers.toFloat() * 10 / totalQuestions.toFloat()
-                val score = "%.1f".format(temp)
-                val resultDialog = Dialog(this)
-                resultDialog.setContentView(R.layout.result_dialog)
-                resultDialog.setTitle("Kết quả thi")
-                val lp = WindowManager.LayoutParams()
-                lp.copyFrom(resultDialog.window!!.attributes)
-                lp.width = WindowManager.LayoutParams.MATCH_PARENT
-                lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-                resultDialog.window!!.attributes = lp
-
-                val tvScore: TextView = resultDialog.findViewById(R.id.tvScore)
-                val tvCorrect: TextView = resultDialog.findViewById(R.id.tvTrue)
-                val tvTime: TextView = resultDialog.findViewById(R.id.tvThoiGian)
-                val btnAnswer: Button = resultDialog.findViewById(R.id.btnAnswer)
-                val btnSaveScore: Button = resultDialog.findViewById(R.id.btnSaveScore)
-                val btnExit: Button = resultDialog.findViewById(R.id.btnExit)
-
-                tvScore.text = "$score điểm"
-                tvCorrect.text = "$correctAnswers/${questionsList.size}"
-                val timeElapsed = totalTime - timeLeft
-                val elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(timeElapsed)
-                val elapsedSeconds = TimeUnit.MILLISECONDS.toSeconds(timeElapsed) -
-                        TimeUnit.MINUTES.toSeconds(elapsedMinutes)
-                tvTime.text = String.format("%02d:%02d", elapsedMinutes, elapsedSeconds)
-
-
-                btnAnswer.setOnClickListener {
-                    // Logic to show detailed results
-                    showAnswer()
-                }
-                btnSaveScore.setOnClickListener {
-                    // Logic to save results
-                    saveScore(score, tvCorrect.text.toString())
-                }
-                btnExit.setOnClickListener {
-                    // Logic to exit
-                    resultDialog.dismiss()
-                    finish()
-
-                }
-
-                resultDialog.show()
+                submitExam()
             }
-
 
             dialog.show()
         }
 
-        val questionIds = intent.getStringArrayListExtra("questions")
-        sumQuestion = questionIds!!.size
 
-        val duration = intent.getLongExtra("time", 0)
-        totalTime = duration * 60000L
-        startTimer(totalTime)
-
-
-        val check = intent.getIntExtra("check",0)
-        if (check == 0) {
-            fetchQuestions(questionIds)
-        } else {
-            val dbHelper = ExamDatabaseHelper(this)
-            val offlineQuestions = dbHelper.getQuestionsByIds(questionIds)
-            questionsList.addAll(offlineQuestions)
-            for (i in questionsList.indices) {
-                userAnswers.add(null)
-            }
-            if (questionsList.isNotEmpty()) {
-                displayQuestion(questionsList[0])
-            }
-        }
     }
 
-    private fun saveScore(score : String, correctAnswers: String) {
+    private fun submitExam(){
+        countDownTimer.cancel()
+        val correctAnswers = calculateResults()
+        val totalQuestions = questionsList.size
+        var temp = correctAnswers.toFloat() * 10 / totalQuestions.toFloat()
+        val score = "%.1f".format(temp)
+        val resultDialog = Dialog(this)
+        resultDialog.setContentView(R.layout.result_dialog)
+        resultDialog.setTitle("Kết quả thi")
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(resultDialog.window!!.attributes)
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT
+        resultDialog.window!!.attributes = lp
 
-        val currentTime = System.currentTimeMillis()
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val formattedDate = sdf.format(Date(currentTime))
+        val tvScore: TextView = resultDialog.findViewById(R.id.tvScore)
+        val tvCorrect: TextView = resultDialog.findViewById(R.id.tvTrue)
+        val tvTime: TextView = resultDialog.findViewById(R.id.tvThoiGian)
+        val btnAnswer: Button = resultDialog.findViewById(R.id.btnAnswer)
+        val btnSaveScore: Button = resultDialog.findViewById(R.id.btnSaveScore)
+        val btnExit: Button = resultDialog.findViewById(R.id.btnExit)
 
-        val subject = intent.getStringExtra("subject")
-        val idExam = intent.getStringExtra("idExam")
-        if (subject == null) return
-        val historyData = hashMapOf(
-            "username" to username,
-            "score" to score,
-            "correctAnswers" to correctAnswers,
-            "timestamp" to formattedDate
+        tvScore.text = "$score điểm"
+        tvCorrect.text = "$correctAnswers/${questionsList.size}"
+        val timeElapsed = totalTime - timeLeft
+        val elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(timeElapsed)
+        val elapsedSeconds = TimeUnit.MILLISECONDS.toSeconds(timeElapsed) -
+                TimeUnit.MINUTES.toSeconds(elapsedMinutes)
+        tvTime.text = String.format("%02d:%02d", elapsedMinutes, elapsedSeconds)
+
+        resultDialog.setCancelable(false) // Ngăn dialog tự động đóng khi chạm ra ngoài
+
+        btnAnswer.setOnClickListener {
+            // Logic to show detailed results
+            showAnswer()
+        }
+        btnSaveScore.setOnClickListener {
+            // Logic to save results
+            val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            val jwtToken = sharedPref.getString("token", null)
+            var user_id = ""
+            var user_name = ""
+            if (jwtToken != null) {
+                // Giải mã JWT và lấy role
+                val jwt = JWT(jwtToken)
+                user_id = jwt.getClaim("userId").asString().toString()
+                user_name = jwt.getClaim("username").asString().toString()
+                Log.d("abc","$user_id   $user_name")
+            }
+            saveScore(user_name, score, tvCorrect.text.toString(), user_id.toInt(), exam_id)
+        }
+        btnExit.setOnClickListener {
+
+            resultDialog.dismiss()
+            finish()
+        }
+
+        resultDialog.show()
+    }
+
+    private fun getQuestionApi(examId: Int) {
+        val questionService = RetrofitClient.retrofit.create(QuestionService::class.java)
+        questionService.getQuestionsByExamId(examId).enqueue(object : Callback<List<QuestionItem>> {
+            override fun onResponse(
+                call: Call<List<QuestionItem>>,
+                response: Response<List<QuestionItem>>
+            ) {
+                if (response.isSuccessful) {
+                    questionsList = response.body()!!
+
+                    if (questionsList.isNotEmpty()) {
+                        sumQuestion = questionsList.size
+                        userAnswers = MutableList(questionsList.size) { null }
+                        displayQuestion(questionsList[0])
+                    }
+                } else {
+                    Log.e("API Error", "Response was not successful")
+                }
+            }
+
+            override fun onFailure(call: Call<List<QuestionItem>>, t: Throwable) {
+                Log.e("API Error", "Failed to make API call", t)
+            }
+        })
+    }
+
+
+    private fun saveScore(username: String, score: String, proportion: String, user_id: Int, exam_id: Int) {
+
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        val currentDate = dateFormat.format(Date())
+
+        val historyRequest = HistoryItem(
+            username = username,
+            proportion = proportion,
+            score = score.toDouble(),
+            time = currentDate,
+            exam_id = exam_id,
+            user_id = user_id
         )
 
-        db = FirebaseFirestore.getInstance()
-        db.collection("subjects").document(subject!!).collection("exams").document(idExam!!)
-            .collection("histories").add(historyData)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Kết quả đã được lưu thành công", Toast.LENGTH_SHORT).show()
+        val historyService = RetrofitClient.retrofit.create(HistoryService::class.java)
 
+        historyService.saveExamHistory(historyRequest).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@DoExamActivity, "Lưu điểm thành công", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@DoExamActivity, "Lưu điểm không thành công", Toast.LENGTH_SHORT).show()
+                }
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Lưu kết quả thất bại: ${e.message}", Toast.LENGTH_SHORT).show()
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(this@DoExamActivity, "Lỗi", Toast.LENGTH_SHORT).show()
+
+                Log.e("SaveHistory", "Error: ${t.message}")
             }
+        })
     }
 
     private fun showAnswer() {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.check_answer_dialog)
         dialog.setTitle("Đáp án đúng")
+        dialog.setCancelable(false)
         val lp = WindowManager.LayoutParams()
         lp.copyFrom(dialog.window!!.attributes)
         lp.width = WindowManager.LayoutParams.MATCH_PARENT
@@ -200,7 +255,8 @@ class DoExamActivity : AppCompatActivity() {
         dialog.window!!.attributes = lp
 
         // Sử dụng adapter mới để hiển thị đáp án đúng
-        val correctAnswerAdapter = CheckAnswerAdapter(this, questionsList, userAnswers, showCorrectAnswers = true)
+        val correctAnswerAdapter =
+            AnswerAdapter(this, questionsList, userAnswers, showCorrectAnswers = true)
         val gvLsQuestion = dialog.findViewById<GridView>(R.id.gridview)
         gvLsQuestion.adapter = correctAnswerAdapter
 
@@ -220,11 +276,11 @@ class DoExamActivity : AppCompatActivity() {
         radB = findViewById(R.id.radB)
         radC = findViewById(R.id.radC)
         radD = findViewById(R.id.radD)
-        btnNext = findViewById(R.id.txtNext)
-        btnBack = findViewById(R.id.txtBack)
+        btnNext = findViewById(R.id.btnNext)
+        btnBack = findViewById(R.id.btnBack)
         tvCurrentQues = findViewById(R.id.txtCurentPosition)
         timer = findViewById(R.id.tvTimer)
-        btnSubmit = findViewById(R.id.tvSubmit)
+        btnSubmit = findViewById(R.id.btnSubmit)
     }
 
     private fun startTimer(duration: Long) {
@@ -248,49 +304,14 @@ class DoExamActivity : AppCompatActivity() {
         }.start()
     }
 
-    private fun submitExam() {
-
-        //
-
-    }
-
-    private fun fetchQuestions(questionIds: List<String>) {
-        db = FirebaseFirestore.getInstance()
-        for (questionId in questionIds) {
-            db.collection("questions").document(questionId).get()
-                .addOnSuccessListener { document ->
-                    val text = document.getString("text") ?: ""
-                    val listAnswer = document.get("options") as? List<String> ?: listOf()
-                    val correct = document.getString("answer") ?: ""
-
-                    val questionItem = QuestionItem(questionId, text, listAnswer, correct)
-                    questionsList.add(questionItem)
-                    userAnswers.add(null) // Initialize with null for each question
-
-                    if (questionsList.size == 1) {
-                        displayQuestion(questionsList[0])
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Log.w("DoExamActivity", "Error getting documents.", e)
-                }
-        }
-
-        val user = FirebaseAuth.getInstance().currentUser
-        db.collection("users").document(user!!.uid).get().addOnSuccessListener {
-            username = it.getString("Username").toString()
-        }
-    }
-
-
     private fun displayQuestion(questionItem: QuestionItem) {
         tvNum.text = "Câu ${currentQuestionIndex + 1}"
         tvCurrentQues.text = "${currentQuestionIndex + 1}/$sumQuestion"
-        tvQuestion.text = questionItem.text
-        radA.text = "A. ${questionItem.listAnswer[0]}"
-        radB.text = "B. ${questionItem.listAnswer[1]}"
-        radC.text = "C. ${questionItem.listAnswer[2]}"
-        radD.text = "D. ${questionItem.listAnswer[3]}"
+        tvQuestion.text = questionItem.question_text
+        radA.text = "A. ${questionItem.answers[0].answer_text}"
+        radB.text = "B. ${questionItem.answers[1].answer_text}"
+        radC.text = "C. ${questionItem.answers[2].answer_text}"
+        radD.text = "D. ${questionItem.answers[3].answer_text}"
         radGroup.clearCheck()
 
         // khôi phục đáp án đã chọn
@@ -329,13 +350,13 @@ class DoExamActivity : AppCompatActivity() {
         }
     }
 
-    private fun calculateResults(): Int{
+    private fun calculateResults(): Int {
         var correctAnswers = 0
         for (i in questionsList.indices) {
             val question = questionsList[i]
             val userAnswerIndex = userAnswers[i]
 
-            if (userAnswerIndex != null && question.listAnswer[userAnswerIndex] == question.correct) {
+            if (userAnswerIndex != null && question.answers[userAnswerIndex].is_correct == 1) {
                 correctAnswers++
             }
         }

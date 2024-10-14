@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:paddingVertical="8dp">
 
     <TextView
-        android:id="@+id/txtPlayerName"
+        android:id="@+id/txtUsername"
         android:text="khánh"
         android:gravity="center"
         android:textSize="17sp"
@@ -34,7 +34,7 @@
         android:layout_weight="1"/>
     <TextView
         android:id="@+id/txtTime"
-        android:gravity="center"
+        android:gravity="right"
         android:text="2021-10-17"
         android:textSize="17sp"
         android:textColor="@color/black"

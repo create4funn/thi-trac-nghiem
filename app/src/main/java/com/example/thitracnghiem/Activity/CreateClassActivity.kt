@@ -1,9 +1,12 @@
 package com.example.thitracnghiem.Activity
 
+import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -12,12 +15,19 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import com.example.thitracnghiem.ApiService.ClassService
+import com.example.thitracnghiem.ApiService.RetrofitClient
 import com.example.thitracnghiem.R
+import com.example.thitracnghiem.model.ClassItem
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.UUID
 
 class CreateClassActivity : AppCompatActivity() {
@@ -28,12 +38,20 @@ class CreateClassActivity : AppCompatActivity() {
     private lateinit var cardView: CardView
     private lateinit var cardView2: CardView
     private lateinit var btnCreateClass: Button
-    private lateinit var db: FirebaseFirestore
     private var selectedImageUri: Uri? = null
+    private val classService = RetrofitClient.retrofit.create(ClassService::class.java)
+    private lateinit var classItem : ClassItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_class)
+
+        // check = true là tạo , false là sửa
+        val check = intent.getBooleanExtra("check", false)
+        if(!check){
+            classItem = intent.getSerializableExtra("classItem") as ClassItem
+        }
+
 
         edtTenLop = findViewById(R.id.createTenLop)
         tvMonhoc = findViewById(R.id.createMonHoc)
@@ -49,10 +67,17 @@ class CreateClassActivity : AppCompatActivity() {
         val arrayAdapter = ArrayAdapter(this, R.layout.item_dropdown, monHoc)
         val arrayAdapter2 = ArrayAdapter(this, R.layout.item_dropdown, lop)
 
+
+
+        if(!check){
+            btnCreateClass.text = "cập nhật"
+            edtTenLop.setText(classItem.class_name)
+            tvMonhoc.setText(classItem.subject_name)
+            tvLop.setText(classItem.grade)
+            Picasso.get().load(classItem.class_img).into(img)
+        }
         tvMonhoc.setAdapter(arrayAdapter)
         tvLop.setAdapter(arrayAdapter2)
-
-        db = FirebaseFirestore.getInstance()
 
         cardView.setOnClickListener {
             ImagePicker.with(this)
@@ -63,8 +88,11 @@ class CreateClassActivity : AppCompatActivity() {
         }
 
         btnCreateClass.setOnClickListener {
-            createClass()
-            finish()
+            if(check){
+                createClass()
+            }else{
+                update(classItem)
+            }
         }
     }
 
@@ -72,7 +100,7 @@ class CreateClassActivity : AppCompatActivity() {
         val tenLop = edtTenLop.text.toString()
         val monHoc = tvMonhoc.text.toString()
         val lop = tvLop.text.toString()
-
+        val teacher_id = intent.getIntExtra("teacher_id", 0)
         if (tenLop.isEmpty() || monHoc.isEmpty() || monHoc == "Môn học" || lop.isEmpty() || lop == "Lớp") {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show()
             return
@@ -87,28 +115,43 @@ class CreateClassActivity : AppCompatActivity() {
         val storageRef = FirebaseStorage.getInstance().reference
         val fileRef = storageRef.child("class_images/${UUID.randomUUID()}.jpg")
 
+
+        val progressDialog = ProgressDialog(this).apply {
+            setTitle("Đang tạo lớp học ...")
+            setMessage("Vui lòng chờ.")
+            setCancelable(false)
+            show()
+        }
         selectedImageUri?.let {
             fileRef.putFile(it)
                 .addOnSuccessListener {
                     fileRef.downloadUrl.addOnSuccessListener { uri ->
-                        val classroom = hashMapOf(
-                            "tenLop" to tenLop,
-                            "monHoc" to monHoc,
-                            "lop" to lop,
-                            "imageUrl" to uri.toString()
+
+                        val classRequest = ClassItem(
+                            classroom_id = null,
+                            class_name = tenLop,
+                            grade = lop,
+                            subject_name = monHoc,
+                            class_img = uri.toString(),
+                            teacher_id = teacher_id,
+                            null,null
                         )
-
-                        db.collection("classrooms")
-                            .add(classroom)
-                            .addOnSuccessListener {document ->
-                                val classId = document.id
-                                updateUserClasses(classId)
-                                Toast.makeText(this, "Lớp học đã được tạo thành công", Toast.LENGTH_SHORT).show()
-
+                        classService.createClass(classRequest).enqueue(object :
+                            Callback<Void> {
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                if (response.isSuccessful) {
+                                    Toast.makeText(this@CreateClassActivity, "Tạo lớp thành công", Toast.LENGTH_SHORT).show()
+                                    progressDialog.cancel()
+                                    finish()
+                                } else {
+                                    Toast.makeText(this@CreateClassActivity, "Lỗi kết nối", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
+
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                Toast.makeText(this@CreateClassActivity, "Lỗi", Toast.LENGTH_SHORT).show()
                             }
+                        })
                     }
                 }
                 .addOnFailureListener { e ->
@@ -117,11 +160,31 @@ class CreateClassActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUserClasses(classId: String) {
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+    private fun update(classItem : ClassItem){
+        val tenLop = edtTenLop.text.toString()
+        val monHoc = tvMonhoc.text.toString()
+        val lop = tvLop.text.toString()
 
-        db.collection("users").document(userId)
-            .update("class", FieldValue.arrayUnion(classId))
+        if (tenLop.isEmpty() || monHoc.isEmpty() || lop.isEmpty()) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val classRequest = ClassItem(classItem.classroom_id, tenLop, lop, monHoc, null, null, null, null)
+        classService.updateClass(classRequest).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@CreateClassActivity, "Sửa thành công", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    Toast.makeText(this@CreateClassActivity, "Lỗi kết nối", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(this@CreateClassActivity, "Lỗi", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

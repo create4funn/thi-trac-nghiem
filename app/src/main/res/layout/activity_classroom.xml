@@ -6,64 +6,142 @@
     android:layout_height="match_parent"
     tools:context=".Activity.ClassroomActivity">
 
-    <TextView
-        android:id="@+id/tv_className"
+    <ImageView
+        android:id="@+id/btnBack2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:layout_marginStart="100dp"
-        android:text="lớp toán"
-        android:textColor="@color/black"
-        android:textSize="25dp"
+        android:layout_marginStart="10dp"
 
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/copyID"
+        android:padding="10dp"
+        android:src="@drawable/baseline_arrow_back_ios_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/copyID"
+        android:id="@+id/tv_className"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:text="@string/copy_id"
-        android:textColor="#0E79CD"
-        android:textSize="17dp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_className" />
+        android:layout_marginTop="10dp"
+        android:text="lớp toán"
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/tv_quanLyLop"
+        app:layout_constraintStart_toEndOf="@+id/btnBack2"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
-
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnCreateExam"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <LinearLayout
+        android:id="@+id/LinearLayoutAccept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_blue"
+        android:padding="5dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/tv_className"
+        app:layout_constraintStart_toStartOf="@+id/tv_className"
         app:layout_constraintTop_toBottomOf="@+id/tv_className">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcvExamClass"
-            android:layout_width="match_parent"
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#AA3232"
+            android:paddingHorizontal="10dp"
+            app:cardCornerRadius="30dp">
 
-            />
-    </ScrollView>
+            <TextView
+                android:id="@+id/numRequest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                android:text="2"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tv4setclick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="  đang chờ xét duyệt"
+            android:textColor="@color/black"
+            android:textSize="16dp" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_quanLyLop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/qll"
+        android:textColor="@color/teal_700"
+        android:textSize="20dp"
+        style="text-decoration"
+        app:layout_constraintBottom_toTopOf="@+id/divider3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="10dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/LinearLayoutAccept" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider3"
+        app:strokeColor="?attr/colorAccent"
+        app:strokeWidth="2dp">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="?attr/colorAccent"
+            app:tabIndicatorGravity="stretch"
+            app:tabMaxWidth="0dp"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@android:color/white"
+            app:tabTextColor="?attr/colorPrimary" />
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+
+        app:layout_constraintBottom_toTopOf="@id/btnCreateExam"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnCreateExam"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="14dp"
         android:text="Tạo bài kiểm tra"
         android:textColor="@color/white"
         android:textSize="20dp"
         android:paddingVertical="15dp"
         android:background="@drawable/rounded_blue2"
-
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -11,7 +11,7 @@ import com.example.thitracnghiem.R
 import com.example.thitracnghiem.model.ClassItem
 import com.squareup.picasso.Picasso
 
-class ClassAdapter(private val classList: List<ClassItem>, private val listener: OnItemClickListener) : RecyclerView.Adapter<ClassAdapter.ClassViewHolder>() {
+class AllClassAdapter(private val classList: List<ClassItem>, private val listener: OnItemClickListener) : RecyclerView.Adapter<AllClassAdapter.ClassViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(item: ClassItem)
@@ -24,10 +24,10 @@ class ClassAdapter(private val classList: List<ClassItem>, private val listener:
 
     override fun onBindViewHolder(holder: ClassViewHolder, position: Int) {
         val currentItem = classList[position]
-        holder.tenLop.text = currentItem.tenLop
-        holder.classSubject.text = currentItem.monHoc
-        holder.classGrade.text = currentItem.lop
-        Picasso.get().load(currentItem.imageUrl).into(holder.imgClass)
+        holder.tenLop.text = currentItem.class_name
+        holder.classSubject.text = currentItem.subject_name
+        holder.classGrade.text = currentItem.grade
+        Picasso.get().load(currentItem.class_img).into(holder.imgClass)
 
         holder.itemView.setOnClickListener {
             listener.onItemClick(currentItem)

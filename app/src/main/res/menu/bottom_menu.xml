@@ -6,6 +6,9 @@
     <item android:title="Lớp học"
         android:icon="@drawable/baseline_menu_book_24"
         android:id="@+id/classroom"/>
+    <item android:title="Tra cứu"
+        android:icon="@drawable/baseline_search_24"
+        android:id="@+id/dictionary"/>
     <item android:title="Đã lưu"
         android:icon="@drawable/baseline_save_alt_24"
         android:id="@+id/save"/>

@@ -42,14 +42,14 @@ class SavedExamFragment : Fragment(), SavedExamAdapter.OnItemClickListener {
     }
 
     override fun onDeleteClick(item: ExamItem) {
-        dbHelper.deleteExamById(item.id)
-        Toast.makeText(requireContext(), "Deleted: ${item.name}", Toast.LENGTH_SHORT).show()
+        dbHelper.deleteExamById(item.exam_id!!)
+        Toast.makeText(requireContext(), "Deleted: ${item.exam_name}", Toast.LENGTH_SHORT).show()
         adapter.removeItem(item)
     }
 
     override fun onDoExamClick(item: ExamItem) {
         val intent = Intent(context, DoExamActivity::class.java)
-        intent.putStringArrayListExtra("questions", ArrayList(item.questions))
+        intent.putExtra("exam_id", item.exam_id)
         intent.putExtra("time", item.duration)
         intent.putExtra("check", 1)
         startActivity(intent)

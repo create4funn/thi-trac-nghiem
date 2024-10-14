@@ -2,8 +2,10 @@
 package com.example.thitracnghiem.model
 
 data class HistoryItem(
-    val examName: String,
-    val score: String,
-    val correctAnswers: String,
-    val timeTaken: String
+    val username: String,
+    val proportion: String,
+    val score: Double,
+    val time: String,
+    val exam_id: Int,
+    val user_id: Int
 )

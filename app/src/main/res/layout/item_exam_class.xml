@@ -1,38 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:background="@drawable/background_item">
-
+    android:padding="8dp"
+    android:orientation="vertical"
+    android:background="@drawable/background_item"
+    >
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tv_examClass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="kiểm tra 1 tiết"
-        android:textColor="@color/black"
-        android:textSize="25dp"
+        android:text="bài test"
+        android:textSize="26dp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:maxLines="1"
+        android:layout_marginLeft="8dp"
+        android:ellipsize="end" />
 
-    <TextView
-        android:id="@+id/tv_numOfQues"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="13 câu"
-        android:textColor="@android:color/holo_green_dark"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-    <TextView
-        android:id="@+id/tv_duration"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="15 phút"
-        android:textColor="@android:color/holo_red_dark"
-        app:layout_constraintStart_toEndOf="@+id/tv_numOfQues"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:id="@+id/tv_numOfQuesClass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="13 câu"
+            android:textColor="@android:color/holo_green_dark"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:id="@+id/tv_durationClass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15 phút"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <TextView
+            android:id="@+id/tv_hide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã ẩn"
+            android:textSize="16dp"
+            android:layout_marginLeft="170dp"
+            android:paddingHorizontal="10dp"
+            android:background="@drawable/rounded_blue"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        >
+
+        <TextView
+            android:id="@+id/tv_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:text="Chỉnh sửa"
+            android:gravity="center_vertical"
+            android:drawableLeft="@drawable/baseline_construction_24"/>
+
+        <TextView
+            android:id="@+id/tv_deleteClass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:text="Xóa"
+            android:gravity="center_vertical"
+            android:drawableLeft="@drawable/baseline_delete_24"/>
+
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:text="Ẩn"
+            android:gravity="center_vertical"
+            android:drawableLeft="@drawable/baseline_remove_red_eye_24"/>
+    </LinearLayout>
+
+</LinearLayout>

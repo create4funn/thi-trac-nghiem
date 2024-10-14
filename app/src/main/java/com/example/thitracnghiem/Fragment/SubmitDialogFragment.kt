@@ -7,7 +7,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.widget.GridView
 import androidx.fragment.app.DialogFragment
-import com.example.thitracnghiem.adapter.CheckAnswerAdapter
+import com.example.thitracnghiem.adapter.AnswerAdapter
 import com.example.thitracnghiem.model.QuestionItem
 
 class SubmitDialogFragment(private val questions: List<QuestionItem>, private val userAnswers: List<Int?>) : DialogFragment() {
@@ -18,7 +18,7 @@ class SubmitDialogFragment(private val questions: List<QuestionItem>, private va
         val dialogView = inflater.inflate(R.layout.check_answer_dialog, null)
 
         val gridView: GridView = dialogView.findViewById(R.id.gridview)
-        val adapter = CheckAnswerAdapter(requireContext(), questions, userAnswers)
+        val adapter = AnswerAdapter(requireContext(), questions, userAnswers)
         gridView.adapter = adapter
 
         builder.setView(dialogView)

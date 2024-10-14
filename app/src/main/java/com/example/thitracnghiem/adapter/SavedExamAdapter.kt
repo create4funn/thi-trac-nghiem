@@ -34,7 +34,7 @@ class SavedExamAdapter(private val list:MutableList<ExamItem>, private val itemC
 
     override fun onBindViewHolder(holder: ExamViewHolder, position: Int) {
         val currentItem = list[position]
-        holder.name.text = currentItem.name
+        holder.name.text = currentItem.exam_name
         holder.num.text = "${currentItem.numOfQues} câu"
         holder.time.text = "${currentItem.duration} phút"
 

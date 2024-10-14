@@ -1,30 +1,38 @@
 package com.example.thitracnghiem.Fragment
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.auth0.android.jwt.JWT
 import com.example.thitracnghiem.Activity.ClassroomActivity
 import com.example.thitracnghiem.Activity.CreateClassActivity
+import com.example.thitracnghiem.ApiService.ClassService
+import com.example.thitracnghiem.ApiService.RetrofitClient
 import com.example.thitracnghiem.R
-import com.example.thitracnghiem.adapter.ClassAdapter
+import com.example.thitracnghiem.adapter.AllClassAdapter
+import com.example.thitracnghiem.adapter.JoinedClassAdapter
 import com.example.thitracnghiem.model.ClassItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class ClrTeacherFragment : Fragment(), ClassAdapter.OnItemClickListener {
+class ClrTeacherFragment : Fragment(), AllClassAdapter.OnItemClickListener {
 
     private lateinit var recyclerViewClasses: RecyclerView
-    private lateinit var classAdapter: ClassAdapter
-    private lateinit var classList: MutableList<ClassItem>
-    private lateinit var userId: String
-    private lateinit var db : FirebaseFirestore
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,44 +48,52 @@ class ClrTeacherFragment : Fragment(), ClassAdapter.OnItemClickListener {
         recyclerViewClasses = view.findViewById(R.id.recyclerView)
 
         recyclerViewClasses.layoutManager = LinearLayoutManager(context)
-        classList = mutableListOf()
-        classAdapter = ClassAdapter(classList, this)
-        recyclerViewClasses.adapter = classAdapter
 
-
-        userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-        db = FirebaseFirestore.getInstance()
-        loadClasses()
+        val teacher_id = getTeacherId()
+        getClasses(teacher_id)
 
         btnCreateClass.setOnClickListener {
             val intent = Intent(context, CreateClassActivity::class.java)
+            intent.putExtra("teacher_id", teacher_id)
+            intent.putExtra("check", true)
             startActivity(intent)
+        }
+
+        val swipeRefreshLayout : SwipeRefreshLayout = view.findViewById(R.id.refreshClassTeacher)
+        swipeRefreshLayout.setOnRefreshListener {
+            getClasses(teacher_id)
+            swipeRefreshLayout.isRefreshing = false
         }
     }
 
-    private fun loadClasses() {
-
-        db.collection("users").document(userId).get().addOnSuccessListener { documentSnapshot ->
-            val classIds = documentSnapshot.get("class") as? List<String> ?: listOf()
-
-            for (classId in classIds) {
-                db.collection("classrooms").document(classId).get().addOnSuccessListener { classDocument ->
-                    val classroom = classDocument.toObject<ClassItem>()
-                    classroom?.let {
-                        it.setId(classDocument.id)
-                        classList.add(it)
-                        classAdapter.notifyDataSetChanged()
-                    }
+    private fun getClasses(teacher_id: Int) {
+        val classService = RetrofitClient.retrofit.create(ClassService::class.java)
+        classService.getClassByTeacher(teacher_id).enqueue(object : Callback<List<ClassItem>> {
+            override fun onResponse(call: Call<List<ClassItem>>, response: Response<List<ClassItem>>) {
+                if (response.isSuccessful) {
+                    val classList = response.body()!!
+                    recyclerViewClasses.adapter = AllClassAdapter(classList, this@ClrTeacherFragment)
                 }
             }
-        }
+
+            override fun onFailure(call: Call<List<ClassItem>>, t: Throwable) {
+                Log.d("abc", "${t.message}")
+                Toast.makeText(context, "Lỗi kết nối", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun getTeacherId() : Int{
+        // Logic to save results
+        val sharedPref = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val user_id = sharedPref.getString("userId", null)
+
+        return user_id!!.toInt()
     }
 
     override fun onItemClick(item: ClassItem) {
-        val intel = Intent(context, ClassroomActivity::class.java)
-        intel.putExtra("classname", "${item.tenLop}")
-        intel.putExtra("classId", "${item.id}")
-        startActivity(intel)
-
+        val intent = Intent(context, ClassroomActivity::class.java)
+        intent.putExtra("classItem", item)
+        startActivity(intent)
     }
 }

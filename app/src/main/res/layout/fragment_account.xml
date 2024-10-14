@@ -6,136 +6,111 @@
     android:orientation="vertical"
     tools:context=".Fragment.AccountFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="center"
+        android:src="@drawable/baseline_person_24" />
+
+    <TextView
+        android:id="@+id/profile_username"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="20dp"
-            android:src="@drawable/baseline_person_24"
-            />
-
-        <LinearLayout
-            android:layout_width="244dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_margin="10dp">
-
-            <TextView
-                android:id="@+id/profile_username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="Username"
-                android:textColor="@color/black"
-                android:textSize="25dp" />
-
-            <TextView
-                android:id="@+id/profile_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="abc@gmail.com"
-                android:textColor="@color/black"
-                android:textSize="18dp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider6"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/black"
-        android:layout_margin="10dp"/>
+        android:layout_marginTop="10dp"
+        android:text="Username"
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:layout_gravity="center"/>
 
     <TextView
-        android:id="@+id/saved"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:drawableLeft="@drawable/baseline_download_done_24"
-        android:gravity="center|left"
-        android:text="  Đã tải xuống"
+        android:id="@+id/profile_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="abc@gmail.com"
         android:textColor="@color/black"
         android:textSize="18dp"
-        android:layout_marginLeft="15dp"/>
+        android:layout_gravity="center"/>
+
 
     <View
-        android:id="@+id/divider0"
+        android:id="@+id/divider9"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:background="?android:attr/listDivider" />
+
     <TextView
-        android:id="@+id/history"
+        android:id="@+id/updateInfo"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:drawableLeft="@drawable/baseline_history_24"
+        android:layout_marginLeft="15dp"
+        android:drawableLeft="@drawable/baseline_construction_24"
         android:gravity="center|left"
-        android:text="  Lịch sử"
+        android:text="  Cập nhật thông tin cá nhân"
         android:textColor="@color/black"
-        android:textSize="18dp"
-        android:layout_marginLeft="15dp"/>
+        android:textSize="18dp" />
 
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:background="?android:attr/listDivider" />
+
     <TextView
         android:id="@+id/changePassword"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:layout_marginLeft="15dp"
         android:drawableLeft="@drawable/baseline_password_24"
         android:gravity="center|left"
         android:text="  Đổi mật khẩu"
         android:textColor="@color/black"
-        android:textSize="18dp"
-        android:layout_marginLeft="15dp"/>
+        android:textSize="18dp" />
 
     <View
         android:id="@+id/divider7"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:background="?android:attr/listDivider" />
 
     <TextView
         android:id="@+id/logOut"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:layout_marginLeft="15dp"
         android:drawableLeft="@drawable/baseline_logout_24"
         android:gravity="center|left"
         android:text="  Đăng xuất"
         android:textColor="@color/black"
-        android:textSize="18dp"
-        android:layout_marginLeft="15dp"/>
+        android:textSize="18dp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:background="?android:attr/listDivider" />
 
     <TextView
         android:id="@+id/deleteAccount"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:layout_marginLeft="15dp"
         android:drawableLeft="@drawable/baseline_delete_24"
         android:gravity="center|left"
         android:text="  Xóa tài khoản"
         android:textColor="@color/black"
-        android:textSize="18dp"
-        android:layout_marginLeft="15dp"/>
+        android:textSize="18dp" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:background="?android:attr/listDivider" />
 
 </LinearLayout>

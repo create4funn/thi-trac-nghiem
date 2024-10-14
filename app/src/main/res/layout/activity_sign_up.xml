@@ -112,10 +112,10 @@
                 android:orientation="horizontal"
                 >
                 <RadioButton
-                    android:id="@+id/rbSinhvien"
+                    android:id="@+id/rbHocsinh"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sinh viên"
+                    android:text="Học sinh"
                     android:textSize="18dp"
                     android:layout_marginLeft="15dp"/>
                 <RadioButton

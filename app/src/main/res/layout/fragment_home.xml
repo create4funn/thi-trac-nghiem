@@ -27,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_uname_home"
+            android:id="@+id/username_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -52,7 +52,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_uname_home" />
+            app:layout_constraintTop_toBottomOf="@id/username_home" />
 
         <ImageView
             android:layout_width="20dp"
@@ -80,251 +80,14 @@
         android:textSize="18dp"
         android:layout_marginLeft="5dp"
         />
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        >
 
-        <GridLayout
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/subjectsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/gridLayout"
-            android:rowCount="4"
-            android:columnCount="2"
-            >
-            <androidx.cardview.widget.CardView
-                android:id="@+id/itemToan"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_margin="10dp"
-                android:layout_gravity="bottom"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:backgroundTint="#E6E6FA"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/toan"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Toán"
-                        android:textSize="30dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/itemAnh"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_margin="8dp"
-                android:layout_gravity="bottom"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:backgroundTint="#E6E6FA"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/anh"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tiếng Anh"
-                        android:textSize="30dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/itemHoa"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_margin="10dp"
-                android:layout_gravity="bottom"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:backgroundTint="#E6E6FA"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/hoa"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hóa Học"
-                        android:textSize="30dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/itemSinh"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_margin="10dp"
-                android:layout_gravity="bottom"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:backgroundTint="#E6E6FA"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/sinh"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sinh Học"
-                        android:textSize="30dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/itemLy"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_margin="10dp"
-                android:layout_gravity="bottom"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:backgroundTint="#E6E6FA"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/ly"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Vật Lý"
-                        android:textSize="30dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/itemSu"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_margin="10dp"
-                android:layout_gravity="bottom"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:backgroundTint="#E6E6FA"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/su"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lịch Sử"
-                        android:textSize="30dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/itemDia"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_margin="10dp"
-                android:layout_gravity="bottom"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:backgroundTint="#E6E6FA"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/dia"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Địa Lý"
-                        android:textSize="30dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/itemGdcd"
-                android:layout_width="170dp"
-                android:layout_height="170dp"
-                android:layout_margin="10dp"
-                android:layout_gravity="bottom"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:backgroundTint="#E6E6FA"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/gdcd"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="GDCD"
-                        android:textSize="30dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </GridLayout>
-    </ScrollView>
+            android:layout_margin="5dp" />
+
+
+
 </LinearLayout>

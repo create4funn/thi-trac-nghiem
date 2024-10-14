@@ -9,7 +9,7 @@ import android.widget.TextView
 import com.example.thitracnghiem.R
 import com.example.thitracnghiem.model.QuestionItem
 
-class CheckAnswerAdapter(
+class AnswerAdapter(
     context: Context,
     private val questions: List<QuestionItem>,
     private val userAnswers: List<Int?>,
@@ -51,12 +51,17 @@ class CheckAnswerAdapter(
 
         if (showCorrectAnswers) {
             // Hiển thị đáp án đúng
-            val correctAnswer = when (question.correct) {
-                question.listAnswer[0] -> "A"
-                question.listAnswer[1] -> "B"
-                question.listAnswer[2] -> "C"
-                question.listAnswer[3] -> "D"
-                else -> ""
+            var correctAnswer = ""
+            for(i in question.answers.indices){
+                if(question.answers[i].is_correct == 1){
+                    correctAnswer = when(i){
+                        0 -> "A"
+                        1 -> "B"
+                        2 -> "C"
+                        3 -> "D"
+                        else -> ""
+                    }
+                }
             }
             holder.tvYourAns.text = correctAnswer
         } else {

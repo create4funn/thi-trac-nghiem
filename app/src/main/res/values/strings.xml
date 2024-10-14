@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">ThiTracNghiem</string>
     <string name="qmk"> <u>Quên mật khẩu?</u> </string>
-    <string name="copy_id"> <u>Sao chép ID</u> </string>
+    <string name="qll"> <u>Quản lý lớp</u> </string>
+    <string name="edit"> <u>Chỉnh sửa</u> </string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

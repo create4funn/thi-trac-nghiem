@@ -1,48 +1,44 @@
 package com.example.thitracnghiem.Activity
 
-import android.content.Context
+import android.app.ProgressDialog
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.thitracnghiem.ApiService.CreateExamRequest
+import com.example.thitracnghiem.ApiService.ExamService
+import com.example.thitracnghiem.ApiService.QuestionService
+import com.example.thitracnghiem.ApiService.RetrofitClient
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.firebase.firestore.FirebaseFirestore
 import com.example.thitracnghiem.R
+import com.example.thitracnghiem.adapter.AnswerAdapter2
+import com.example.thitracnghiem.model.Answer
+import com.example.thitracnghiem.model.QuestionItem
+import com.google.firebase.storage.FirebaseStorage
+import okhttp3.ResponseBody
+import retrofit2.*
+import java.util.*
 
-class BottomSheetFragment(
-    private val numOfQues: Int,
-    private val examName: String,
-    private val duration: Int,
-    private val classId: String
-) : BottomSheetDialogFragment() {
+class BottomSheetFragment(private val exam_id: Int?, private val numOfQues: Int, private val examName: String, private val duration: Int, private val classId: Int, private val pdfUri: Uri?, private val pdfUrl: String?, private val fileName: String?, private val flag: Int) : BottomSheetDialogFragment() {
 
     private lateinit var questions: MutableList<CreateQuestionFragment>
-    private var callback: OnExamSavedListener? = null
+    private var questionItems = mutableListOf<QuestionItem>()
+    private var questionList : List<QuestionItem> = emptyList()
+    private val examService = RetrofitClient.retrofit.create(ExamService::class.java)
 
-    interface OnExamSavedListener {
-        fun onExamSaved()
-    }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnExamSavedListener) {
-            callback = context
-        } else {
-            throw RuntimeException("$context must implement OnExamSavedListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback = null
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,81 +52,202 @@ class BottomSheetFragment(
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
         val viewPager = view.findViewById<androidx.viewpager2.widget.ViewPager2>(R.id.viewPager)
         val btnDone = view.findViewById<Button>(R.id.done)
+        val rcvAnswer = view.findViewById<RecyclerView>(R.id.recyclerViewAnswers)
+        rcvAnswer.layoutManager = LinearLayoutManager(context)
 
-        questions = MutableList(numOfQues) { CreateQuestionFragment() }
-        viewPager.adapter = QuestionsPagerAdapter(requireActivity(), questions)
+        // flag = 1 là tạo đề có pdf, flag = 2 -> sửa đề có pdf
+        if(flag > 0){
+            tabLayout.visibility = View.GONE
+            viewPager.visibility = View.GONE
+            rcvAnswer.visibility = View.VISIBLE
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = "Câu ${position + 1}"
-        }.attach()
+            if(flag==2){ //sửa đề
+                getQuestionList(exam_id!!, rcvAnswer)
+            }else{
+                //khởi tạo questionList rỗng
+                questionList = List(numOfQues) {
+                    QuestionItem(null,null,
+                        answers = List(4) {
+                            Answer(null, null, 0)
+                        }
+                    )
+                }
+                rcvAnswer.adapter = AnswerAdapter2(questionList)
+            }
 
-        btnDone.setOnClickListener {
-            saveQuestionsAndExamToFirestore()
+
+            btnDone.setOnClickListener {
+                getInput2(questionList)
+            }
+        }else{
+            questions = MutableList(numOfQues) { CreateQuestionFragment() }
+            viewPager.adapter = QuestionsPagerAdapter(requireActivity(), questions)
+
+            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                tab.text = "Câu ${position + 1}"
+            }.attach()
+
+            btnDone.setOnClickListener {
+                getInput1()
+            }
         }
+
+
+
     }
 
-    private fun saveQuestionsAndExamToFirestore() {
-        val db = FirebaseFirestore.getInstance()
-        val batch = db.batch()
-        val questionRefs = mutableListOf<String>()
+    private fun getInput1() {
+        // Lặp qua từng fragment trong ViewPager
+        for (fragment in questions) {
+            val view = fragment.view ?: continue
 
-        for ((index, questionFragment) in questions.withIndex()) {
-            val view = questionFragment.view ?: continue
+            // Lấy dữ liệu từ EditText trong mỗi tab
             val questionText = view.findViewById<EditText>(R.id.edtQuestion).text.toString()
-            val options = listOf(
-                view.findViewById<EditText>(R.id.edtAnswer1).text.toString(),
-                view.findViewById<EditText>(R.id.edtAnswer2).text.toString(),
-                view.findViewById<EditText>(R.id.edtAnswer3).text.toString(),
-                view.findViewById<EditText>(R.id.edtAnswer4).text.toString()
-            )
-            val correctAnswer = view.findViewById<EditText>(R.id.edtCorrectAnswer).text.toString()
+            val answer1 = view.findViewById<EditText>(R.id.edtAnswer1).text.toString()
+            val answer2 = view.findViewById<EditText>(R.id.edtAnswer2).text.toString()
+            val answer3 = view.findViewById<EditText>(R.id.edtAnswer3).text.toString()
+            val answer4 = view.findViewById<EditText>(R.id.edtAnswer4).text.toString()
 
-            if (questionText.isEmpty() || options.any { it.isEmpty() } || correctAnswer.isEmpty()) {
-                Toast.makeText(requireContext(), "Vui lòng nhập đầy đủ thông tin cho câu ${index + 1}", Toast.LENGTH_SHORT).show()
+            // Lấy đáp án đúng từ RadioGroup
+            val rgCorrect = view.findViewById<RadioGroup>(R.id.rgCorrect)
+            val correctAnswer = when (rgCorrect.checkedRadioButtonId) {
+                R.id.buttonA -> 1
+                R.id.buttonB -> 2
+                R.id.buttonC -> 3
+                R.id.buttonD -> 4
+                else -> -1
+            }
+
+            if (questionText.isEmpty() || answer1.isEmpty() || answer2.isEmpty() || answer3.isEmpty() || answer4.isEmpty() || correctAnswer == -1) {
+                Toast.makeText(requireContext(), "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
                 return
             }
-
-            val questionData = hashMapOf(
-                "text" to questionText,
-                "options" to options,
-                "answer" to correctAnswer
+            // Tạo danh sách các đáp án
+            val answers = listOf(
+                Answer(0, answer1, if (correctAnswer == 1) 1 else 0),
+                Answer(0, answer2, if (correctAnswer == 2) 1 else 0),
+                Answer(0, answer3, if (correctAnswer == 3) 1 else 0),
+                Answer(0, answer4, if (correctAnswer == 4) 1 else 0)
             )
 
-            val questionRef = db.collection("questions").document()
-            questionRefs.add(questionRef.id)
-            batch.set(questionRef, questionData)
+            // Tạo đối tượng QuestionItem và thêm vào danh sách
+            val questionItem = QuestionItem(0, questionText, answers)
+            questionItems.add(questionItem)
         }
 
-        batch.commit().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                saveExamToFirestore(questionRefs)
-            } else {
-                Toast.makeText(requireContext(), "Đã xảy ra lỗi khi lưu các câu hỏi", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun saveExamToFirestore(questionRefs: List<String>) {
-        val db = FirebaseFirestore.getInstance()
-        val examData = hashMapOf(
-            "examName" to examName,
-            "duration" to duration,
-            "numOfQues" to numOfQues,
-            "questions" to questionRefs
+        val createExamRequest = CreateExamRequest(
+            examName, classId, null, duration, numOfQues, null,
+            questions = questionItems
         )
 
-        db.collection("classrooms").document(classId)
-            .collection("exams")
-            .add(examData)
-            .addOnSuccessListener {
-                callback?.onExamSaved()
-                Toast.makeText(requireContext(), "Bài kiểm tra đã được lưu thành công", Toast.LENGTH_SHORT).show()
-                dismiss()
+        createExam(createExamRequest)
+    }
 
+    private fun getInput2(questionList : List<QuestionItem>) {
+        val progressDialog = ProgressDialog(context).apply {
+            setTitle("Đang tạo bài kiểm tra...")
+            setMessage("Vui lòng chờ.")
+            setCancelable(false)
+        }
+        var examRequest : CreateExamRequest
+
+        if(pdfUri != null){
+            progressDialog.show()
+            // Tạo đường dẫn cho file PDF
+            val storageRef = FirebaseStorage.getInstance().reference
+            val fileRef = storageRef.child("exam_pdf/$fileName")
+            pdfUri.let {
+                fileRef.putFile(it)
+                    .addOnSuccessListener {
+                        fileRef.downloadUrl.addOnSuccessListener { uri ->
+                            progressDialog.cancel()
+                            if(flag == 1){
+                                examRequest = CreateExamRequest(
+                                    examName, classId, null, duration, numOfQues, uri.toString(),
+                                    questions = questionList
+                                )
+                                createExam(examRequest)
+                            }else if(flag == 2){
+                                examRequest = CreateExamRequest(
+                                    examName, null, null, duration, numOfQues, uri.toString(),
+                                    questions = questionList
+                                )
+                                updateExam(exam_id!!, examRequest)
+                            }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(context, "Lỗi khi tải file: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
             }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Đã xảy ra lỗi khi lưu bài kiểm tra", Toast.LENGTH_SHORT).show()
+        }else{
+            examRequest = CreateExamRequest(
+                examName, null, null, duration, numOfQues, pdfUrl.toString(),
+                questions = questionList
+            )
+            updateExam(exam_id!!, examRequest)
+        }
+
+    }
+
+
+    private fun createExam(createExamRequest : CreateExamRequest){
+
+        examService.createExam(createExamRequest).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Bài kiểm tra đã được tạo thành công", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                    activity?.finish()
+                } else {
+                    Toast.makeText(context, "Có lỗi xảy ra khi tạo bài kiểm tra", Toast.LENGTH_SHORT).show()
+                    val errorBody = response.errorBody()?.string()
+                    Log.d("abc", "${response.code()}, $errorBody")
+                }
             }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(context, "Không thể kết nối với server", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun updateExam(exam_id: Int, updateRequest : CreateExamRequest){
+
+        examService.updateExam(exam_id, updateRequest).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Cập nhật bài kiểm tra thành công", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                    activity?.finish()
+                } else {
+                    Toast.makeText(context, "Có lỗi xảy ra khi tạo bài kiểm tra", Toast.LENGTH_SHORT).show()
+                    val errorBody = response.errorBody()?.string()
+                    Log.d("abc", "${response.code()}, $errorBody")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(context, "Không thể kết nối với server", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun getQuestionList(examId: Int, recyclerView: RecyclerView)  {
+        val questionService = RetrofitClient.retrofit.create(QuestionService::class.java)
+
+        questionService.getQuestionsByExamId(examId).enqueue(object : Callback<List<QuestionItem>> {
+            override fun onResponse(call: Call<List<QuestionItem>>, response: Response<List<QuestionItem>>) {
+                if (response.isSuccessful) {
+                    questionList = response.body()!!
+                    recyclerView.adapter = AnswerAdapter2(questionList)
+                }
+            }
+
+            override fun onFailure(call: Call<List<QuestionItem>>, t: Throwable) {
+                Log.e("API Error", "Failed to make API call", t)
+            }
+        })
     }
 
     inner class QuestionsPagerAdapter(fa: FragmentActivity, private val questions: List<CreateQuestionFragment>) :
@@ -139,6 +256,8 @@ class BottomSheetFragment(
         override fun createFragment(position: Int): Fragment = questions[position]
     }
 }
+
+
 
 
 class CreateQuestionFragment : Fragment() {

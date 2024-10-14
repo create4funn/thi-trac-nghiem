@@ -1,67 +1,68 @@
 package com.example.thitracnghiem.Activity
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.thitracnghiem.ApiService.AuthService
+import com.example.thitracnghiem.ApiService.RegisterResponse
+import com.example.thitracnghiem.ApiService.RetrofitClient
+import com.example.thitracnghiem.ApiService.UserRegister
 import com.example.thitracnghiem.R
 import com.example.thitracnghiem.databinding.ActivitySignUpBinding
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
-    private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        firebaseAuth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
-
         binding.btnSignUp.setOnClickListener {
             val username = binding.edtHoten.text.toString()
             val email = binding.edtEmail.text.toString()
             val password = binding.edtSignUpPass.text.toString()
             val confirmPassword = binding.edtNhapLai.text.toString()
-            val sdt = binding.edtSdt.text.toString()
-
+            val phoneNumber = binding.edtSdt.text.toString()
             val selectedRoleId = binding.rgRole.checkedRadioButtonId
             val role = when (selectedRoleId) {
-                R.id.rbSinhvien -> "Sinh viên"
-                R.id.rbGiaovien -> "Giáo viên"
-                else -> ""
+                R.id.rbHocsinh -> 1
+                R.id.rbGiaovien -> 2
+                else -> 0
             }
 
-            if (email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && role.isNotEmpty()) {
+            if (email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && role != 0) {
                 if (password == confirmPassword) {
-                    firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            val userID = firebaseAuth.currentUser!!.uid
-                            val userMap = hashMapOf(
-                                "Username" to username,
-                                "Email" to email,
-                                "Role" to role
-                            )
-                            db.collection("users").document(userID).set(userMap).addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this, LoginActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
-                                } else {
-                                    Toast.makeText(this, "Lỗi khi lưu thông tin người dùng", Toast.LENGTH_SHORT).show()
-                                }
+                    val apiService = RetrofitClient.retrofit.create(AuthService::class.java)
+                    val registration = UserRegister(username, email, phoneNumber, password, role)
+                    Log.d("abc", "test 1")
+                    apiService.registerUser(registration).enqueue(object : Callback<RegisterResponse> {
+                        override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+                            Log.d("abc", "test 2")
+                            if (response.isSuccessful) {
+                                Toast.makeText(this@SignUpActivity, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                // Nếu response không thành công, in chi tiết lỗi
+                                val errorBody = response.errorBody()?.string()
+                                Log.e("SignUpActivity", "Lỗi API: $errorBody")
+                                Toast.makeText(this@SignUpActivity, "Đăng ký thất bại: $errorBody", Toast.LENGTH_LONG).show()
                             }
-                        } else {
-                            Toast.makeText(this, "Email đã tồn tại hoặc không đúng định dạng", Toast.LENGTH_SHORT).show()
                         }
-                    }
+
+                        override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                            Log.e("SignUpActivity", "Có lỗi xảy ra", t)
+                            Toast.makeText(this@SignUpActivity, "Có lỗi xảy ra: ${t.message}", Toast.LENGTH_LONG).show()
+                        }
+                    })
                 } else {
                     Toast.makeText(this, "Mật khẩu không trùng khớp", Toast.LENGTH_SHORT).show()
                 }

@@ -17,16 +17,16 @@ class HistoryAdapter(private val historyList: List<HistoryItem>) : RecyclerView.
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
         val currentItem = historyList[position]
-        holder.txtPlayerName.text = currentItem.examName
-        holder.txtNumTrue.text = currentItem.correctAnswers.toString()
+        holder.username.text = currentItem.username
+        holder.txtNumTrue.text = currentItem.proportion
         holder.txtScore.text = currentItem.score.toString()
-        holder.txtTime.text = currentItem.timeTaken
+        holder.txtTime.text = currentItem.time
     }
 
     override fun getItemCount() = historyList.size
 
     class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val txtPlayerName: TextView = itemView.findViewById(R.id.txtPlayerName)
+        val username: TextView = itemView.findViewById(R.id.txtUsername)
         val txtNumTrue: TextView = itemView.findViewById(R.id.txtNumTrue)
         val txtScore: TextView = itemView.findViewById(R.id.txtScore)
         val txtTime: TextView = itemView.findViewById(R.id.txtTime)

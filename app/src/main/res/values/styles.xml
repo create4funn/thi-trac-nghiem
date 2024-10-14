@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomRadioButtonTextStyle">
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/black</item> <!-- Define text color states separately -->
+        <item name="android:button">@null</item> <!-- Remove default radio button design -->
+        <item name="android:background">@drawable/custom_radio_button2</item> <!-- Use custom drawable -->
+        <item name="android:gravity">center</item> <!-- Center the text -->
+    </style>
+</resources>
