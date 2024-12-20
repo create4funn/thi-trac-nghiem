@@ -27,9 +27,10 @@ class AnswerAdapter2(private val questionList: List<QuestionItem>) : RecyclerVie
         // Hiển thị số câu hỏi
         holder.questionNumber.text = "Câu ${position + 1}:"
 
-        // Đặt trạng thái đã chọn của RadioGroup dựa trên giá trị is_correct của các Answer
-        holder.radioGroup.setOnCheckedChangeListener(null)  // Loại bỏ lắng nghe trước đó
 
+        holder.radioGroup.setOnCheckedChangeListener(null)  //Xóa lắng nghe sự kiện trước đó để tránh xót lại sự kiện cũ khi cuộn
+
+        // Đặt trạng thái đã chọn của RadioGroup dựa trên giá trị is_correct của các Answer
         when (question.answers.indexOfFirst { it.is_correct == 1 }) {
             0 -> holder.radioGroup.check(R.id.radioButtonA)
             1 -> holder.radioGroup.check(R.id.radioButtonB)
@@ -40,7 +41,7 @@ class AnswerAdapter2(private val questionList: List<QuestionItem>) : RecyclerVie
 
         // Lắng nghe sự kiện thay đổi của RadioGroup
         holder.radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            // Reset tất cả các câu trả lời thành is_correct = 0
+            // Reset 4 đáp án thành is_correct = 0
             question.answers.forEach { it.is_correct = 0 }
 
             // Cập nhật đáp án đã chọn

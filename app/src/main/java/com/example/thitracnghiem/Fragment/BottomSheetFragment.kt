@@ -92,8 +92,6 @@ class BottomSheetFragment(private val exam_id: Int?, private val numOfQues: Int,
             }
         }
 
-
-
     }
 
     private fun getInput1() {

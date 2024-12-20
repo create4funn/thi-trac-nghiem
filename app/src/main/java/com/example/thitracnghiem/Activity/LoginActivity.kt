@@ -59,7 +59,7 @@ class LoginActivity : AppCompatActivity() {
                                     return@addOnCompleteListener
                                 }
                                 val fcmToken = task.result
-                                Log.d("abc", "$fcmToken")
+                                Log.d("abcd", "$fcmToken")
                                 // Gửi token này về backend của bạn để lưu trữ
                                 sendFcmToken(userId, fcmToken)
                             }

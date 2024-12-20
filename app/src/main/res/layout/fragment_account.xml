@@ -3,18 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".Fragment.AccountFragment">
 
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="10dp"
         android:layout_gravity="center"
+        app:civ_border_color="#9E9A9A"
+        app:civ_border_width="2dp"
         android:src="@drawable/baseline_person_24" />
-
     <TextView
         android:id="@+id/profile_username"
         android:layout_width="wrap_content"

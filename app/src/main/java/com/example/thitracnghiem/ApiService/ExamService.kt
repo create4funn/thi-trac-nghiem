@@ -25,8 +25,8 @@ interface ExamService {
     @POST("exams/create")
     fun createExam(@Body request: CreateExamRequest): Call<ResponseBody>
 
-    @DELETE("exams/delete/{exam_id}")
-    fun deleteExam(@Path("exam_id") exam_id: Int): Call<Void>
+    @DELETE("exams/delete/{exam_id}/{class_id}")
+    fun deleteExam(@Path("exam_id") exam_id: Int, @Path("class_id") class_id: Int): Call<Void>
 
     @PUT("exams/visibility/{exam_id}/{status}")
     fun updateVisibility(@Path("exam_id") exam_id: Int, @Path("status") status: Int): Call<Void>

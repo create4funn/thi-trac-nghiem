@@ -160,18 +160,11 @@ class DoExamActivity : AppCompatActivity() {
             showAnswer()
         }
         btnSaveScore.setOnClickListener {
-            // Logic to save results
+
             val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-            val jwtToken = sharedPref.getString("token", null)
-            var user_id = ""
-            var user_name = ""
-            if (jwtToken != null) {
-                // Giải mã JWT và lấy role
-                val jwt = JWT(jwtToken)
-                user_id = jwt.getClaim("userId").asString().toString()
-                user_name = jwt.getClaim("username").asString().toString()
-                Log.d("abc","$user_id   $user_name")
-            }
+            var user_id = sharedPref.getString("userId", null) as String
+            var user_name = sharedPref.getString("username", null) as String
+
             saveScore(user_name, score, tvCorrect.text.toString(), user_id.toInt(), exam_id)
         }
         btnExit.setOnClickListener {

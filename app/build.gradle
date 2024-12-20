@@ -70,4 +70,6 @@ dependencies {
     implementation 'org.apache.poi:poi:5.2.3'  // Thư viện xử lý Excel cơ bản
     implementation 'org.apache.poi:poi-ooxml:5.2.3'  // Thư viện hỗ trợ định dạng .xlsx
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+
 }

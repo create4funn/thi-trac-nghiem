@@ -151,7 +151,7 @@ class HistoryActivity : AppCompatActivity() {
             workbook.write(outputStream)
         }
         workbook.close()
-        Log.d("abc", "${filePath.absolutePath}")
+        //Log.d("abc", "${filePath.absolutePath}")
         Toast.makeText(this, "File Excel đã được lưu tại: ${filePath.absolutePath}", Toast.LENGTH_LONG).show()
     }
 

@@ -2,9 +2,6 @@ package com.example.thitracnghiem.Activity
 
 import android.app.Dialog
 import android.content.Context
-import android.content.pm.ActivityInfo
-import android.net.Uri
-import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -14,26 +11,21 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.auth0.android.jwt.JWT
 import com.example.thitracnghiem.ApiService.HistoryService
 import com.example.thitracnghiem.ApiService.QuestionService
 import com.example.thitracnghiem.ApiService.RetrofitClient
 import com.example.thitracnghiem.R
 import com.example.thitracnghiem.adapter.AnswerAdapter
 import com.example.thitracnghiem.adapter.AnswerAdapter2
-import com.example.thitracnghiem.helper.ExamDatabaseHelper
 import com.example.thitracnghiem.model.Answer
 import com.example.thitracnghiem.model.HistoryItem
 import com.example.thitracnghiem.model.QuestionItem
 import com.github.barteksc.pdfviewer.PDFView
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import okhttp3.*
 import java.io.BufferedInputStream
-import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -69,7 +61,8 @@ class DoExam2Activity : AppCompatActivity() {
         numOfQues = intent.getIntExtra("numOfQues",-1)
 
         // khởi tạo view
-        RetrievePDFFromURL(pdfView).execute(url_pdf)
+        //RetrievePDFFromURL(pdfView).execute(url_pdf)
+        loadPDF(url_pdf)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -94,34 +87,61 @@ class DoExam2Activity : AppCompatActivity() {
         }
     }
 
-    class RetrievePDFFromURL(pdfView: PDFView) : AsyncTask<String, Void, InputStream>() {
-
-        val mypdfView: PDFView = pdfView
-
-        override fun doInBackground(vararg params: String?): InputStream? {
-
-            var inputStream: InputStream? = null
+    private fun loadPDF(url: String) {
+        // Sử dụng Coroutines để tải PDF
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                val url = URL(params.get(0))
-
-                val urlConnection: HttpURLConnection = url.openConnection() as HttpsURLConnection
-
-                if (urlConnection.responseCode == 200) {
-                    inputStream = BufferedInputStream(urlConnection.inputStream)
+                val inputStream = downloadPDF(url)
+                withContext(Dispatchers.Main) {
+                    pdfView.fromStream(inputStream).load()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DoExam2Activity, "Lỗi khi tải PDF", Toast.LENGTH_SHORT).show()
                 }
             }
-
-            catch (e: Exception) {
-                e.printStackTrace()
-                return null;
-            }
-            return inputStream;
-        }
-
-        override fun onPostExecute(result: InputStream?) {
-            mypdfView.fromStream(result).load()
         }
     }
+
+    private fun downloadPDF(urlString: String): InputStream {
+        val url = URL(urlString)
+        val urlConnection: HttpURLConnection = url.openConnection() as HttpsURLConnection
+        if (urlConnection.responseCode == 200) {
+            return BufferedInputStream(urlConnection.inputStream)
+        } else {
+            throw Exception("Không thể tải tệp PDF. Mã phản hồi: ${urlConnection.responseCode}")
+        }
+    }
+
+//    class RetrievePDFFromURL(pdfView: PDFView) : AsyncTask<String, Void, InputStream>() {
+//
+//        val mypdfView: PDFView = pdfView
+//
+//        override fun doInBackground(vararg params: String?): InputStream? {
+//
+//            var inputStream: InputStream? = null
+//            try {
+//                val url = URL(params.get(0))
+//
+//                val urlConnection: HttpURLConnection = url.openConnection() as HttpsURLConnection
+//
+//                if (urlConnection.responseCode == 200) {
+//                    inputStream = BufferedInputStream(urlConnection.inputStream)
+//                }
+//            }
+//
+//            catch (e: Exception) {
+//                e.printStackTrace()
+//                return null;
+//            }
+//            return inputStream;
+//        }
+//
+//        override fun onPostExecute(result: InputStream?) {
+//            mypdfView.fromStream(result).load()
+//        }
+//    }
 
 
     private fun submitExam(){

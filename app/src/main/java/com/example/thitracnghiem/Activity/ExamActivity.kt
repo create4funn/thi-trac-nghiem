@@ -17,6 +17,7 @@ import com.example.thitracnghiem.R
 import com.example.thitracnghiem.adapter.ExamAdapter
 import com.example.thitracnghiem.adapter.ExamAdapter2
 import com.example.thitracnghiem.helper.ExamDatabaseHelper
+import com.example.thitracnghiem.model.ClassItem
 import com.example.thitracnghiem.model.ExamItem
 import com.example.thitracnghiem.model.QuestionItem
 import com.google.android.gms.tasks.Tasks
@@ -34,6 +35,7 @@ class ExamActivity : AppCompatActivity(), ExamAdapter.OnItemClickListener,
     private var examList : List<ExamItem> = emptyList()
     private var questionsList: List<QuestionItem> = emptyList()
     private val examService = RetrofitClient.retrofit.create(ExamService::class.java)
+    private var class_id = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +45,7 @@ class ExamActivity : AppCompatActivity(), ExamAdapter.OnItemClickListener,
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val subject_id = intent.getIntExtra("subject_id", 0)
-        val class_id = intent.getIntExtra("class_id", 0)
+        class_id = intent.getIntExtra("class_id", 0)
 
         if(subject_id > 0){
             getExamBySubject(subject_id)
@@ -166,7 +168,8 @@ class ExamActivity : AppCompatActivity(), ExamAdapter.OnItemClickListener,
     }
 
     override fun onDeleteClick(item: ExamItem) {
-        examService.deleteExam(item.exam_id!!).enqueue(object : Callback<Void>{
+
+        examService.deleteExam(item.exam_id!!, class_id).enqueue(object : Callback<Void>{
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful){
                     // Cập nhật danh sách và xóa item
