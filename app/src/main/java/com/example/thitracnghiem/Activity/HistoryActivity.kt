@@ -79,7 +79,7 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun fetchHistoryClass(examId: Int) {
-        val historyService = RetrofitClient.retrofit.create(HistoryService::class.java)
+        val historyService = RetrofitClient.instance(this).create(HistoryService::class.java)
 
         historyService.getHistoryByExamId(examId).enqueue(object : Callback<List<HistoryItem>> {
             override fun onResponse(call: Call<List<HistoryItem>>, response: Response<List<HistoryItem>>) {
@@ -101,7 +101,7 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun fetchHistory(userId: Int, examId: Int) {
-        val historyService = RetrofitClient.retrofit.create(HistoryService::class.java)
+        val historyService = RetrofitClient.instance(this).create(HistoryService::class.java)
 
         historyService.getHistoryByUserAndExam(userId, examId).enqueue(object : Callback<List<HistoryItem>> {
             override fun onResponse(call: Call<List<HistoryItem>>, response: Response<List<HistoryItem>>) {

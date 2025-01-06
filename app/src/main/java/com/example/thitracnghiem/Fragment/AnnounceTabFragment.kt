@@ -29,8 +29,7 @@ class AnnounceTabFragment : Fragment() {
     private lateinit var classItem : ClassItem
 //    private lateinit var announceList : List<AnnouncementItem>
 
-    private val classService = RetrofitClient.retrofit.create(ClassService::class.java)
-
+    private lateinit var classService: ClassService
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +41,7 @@ class AnnounceTabFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        classService = RetrofitClient.instance(requireContext()).create(ClassService::class.java)
         arguments?.let {
             classItem = it.getSerializable("classItem") as ClassItem
         }

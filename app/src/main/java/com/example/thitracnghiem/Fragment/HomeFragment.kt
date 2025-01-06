@@ -59,7 +59,7 @@ class HomeFragment : Fragment(), SubjectAdapter.OnSubjectClickListener {
         recyclerView = view.findViewById(R.id.subjectsRecyclerView)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
 
-        subjectService = RetrofitClient.retrofit.create(SubjectService::class.java)
+        subjectService = RetrofitClient.instance(requireContext()).create(SubjectService::class.java)
 
         getSubjectsApi()
 

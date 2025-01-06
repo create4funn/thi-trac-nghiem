@@ -67,7 +67,7 @@ class ClrTeacherFragment : Fragment(), AllClassAdapter.OnItemClickListener {
     }
 
     private fun getClasses(teacher_id: Int) {
-        val classService = RetrofitClient.retrofit.create(ClassService::class.java)
+        val classService = RetrofitClient.instance(requireContext()).create(ClassService::class.java)
         classService.getClassByTeacher(teacher_id).enqueue(object : Callback<List<ClassItem>> {
             override fun onResponse(call: Call<List<ClassItem>>, response: Response<List<ClassItem>>) {
                 if (response.isSuccessful) {

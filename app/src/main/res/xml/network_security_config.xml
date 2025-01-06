@@ -3,5 +3,8 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">192.168.43.221</domain>
+        <trust-anchors>
+            <certificates src="@raw/cert" /> <!-- Thay `cert` bằng tên file chứng chỉ của bạn -->
+        </trust-anchors>
     </domain-config>
 </network-security-config>

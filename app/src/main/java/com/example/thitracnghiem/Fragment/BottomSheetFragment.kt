@@ -37,7 +37,7 @@ class BottomSheetFragment(private val exam_id: Int?, private val numOfQues: Int,
     private lateinit var questions: MutableList<CreateQuestionFragment>
     private var questionItems = mutableListOf<QuestionItem>()
     private var questionList : List<QuestionItem> = emptyList()
-    private val examService = RetrofitClient.retrofit.create(ExamService::class.java)
+    private lateinit var examService: ExamService
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +48,7 @@ class BottomSheetFragment(private val exam_id: Int?, private val numOfQues: Int,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        examService = RetrofitClient.instance(requireContext()).create(ExamService::class.java)
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
         val viewPager = view.findViewById<androidx.viewpager2.widget.ViewPager2>(R.id.viewPager)
         val btnDone = view.findViewById<Button>(R.id.done)
@@ -232,7 +232,7 @@ class BottomSheetFragment(private val exam_id: Int?, private val numOfQues: Int,
     }
 
     private fun getQuestionList(examId: Int, recyclerView: RecyclerView)  {
-        val questionService = RetrofitClient.retrofit.create(QuestionService::class.java)
+        val questionService = RetrofitClient.instance(requireContext()).create(QuestionService::class.java)
 
         questionService.getQuestionsByExamId(examId).enqueue(object : Callback<List<QuestionItem>> {
             override fun onResponse(call: Call<List<QuestionItem>>, response: Response<List<QuestionItem>>) {

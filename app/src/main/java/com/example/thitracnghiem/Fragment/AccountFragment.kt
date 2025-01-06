@@ -30,7 +30,8 @@ class AccountFragment : Fragment() {
     private lateinit var uname: TextView
     private var user_id = 0
     private lateinit var userItem : UserItem
-    private val userService = RetrofitClient.retrofit.create(AuthService::class.java)
+    private lateinit var userService: AuthService // Sử dụng lateinit thay vì khởi tạo sớm
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,7 +42,7 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val logOut: TextView = view.findViewById(R.id.logOut)
-
+        userService = RetrofitClient.instance(requireContext()).create(AuthService::class.java)
         // Nhận user_id từ Bundle
         arguments?.let {
            user_id = it.getString("userId").toString().toInt()

@@ -34,13 +34,14 @@ class ExamActivity : AppCompatActivity(), ExamAdapter.OnItemClickListener,
     private lateinit var recyclerView: RecyclerView
     private var examList : List<ExamItem> = emptyList()
     private var questionsList: List<QuestionItem> = emptyList()
-    private val examService = RetrofitClient.retrofit.create(ExamService::class.java)
+    private lateinit var examService: ExamService
     private var class_id = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
 
+        examService = RetrofitClient.instance(this).create(ExamService::class.java)
         recyclerView = findViewById(R.id.recycleView_exam)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -96,7 +97,7 @@ class ExamActivity : AppCompatActivity(), ExamAdapter.OnItemClickListener,
     }
 
     private fun saveTest(examId: Int, item: ExamItem ) {
-        val questionService = RetrofitClient.retrofit.create(QuestionService::class.java)
+        val questionService = RetrofitClient.instance(this).create(QuestionService::class.java)
 
         questionService.getQuestionsByExamId(examId).enqueue(object : Callback<List<QuestionItem>> {
             override fun onResponse(call: Call<List<QuestionItem>>, response: Response<List<QuestionItem>>) {

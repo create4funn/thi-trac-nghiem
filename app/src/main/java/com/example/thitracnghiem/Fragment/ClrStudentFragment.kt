@@ -29,7 +29,7 @@ class ClrStudentFragment : Fragment(), AllClassAdapter.OnItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var frame1: FrameLayout
     private lateinit var frame2: FrameLayout
-    private val classService = RetrofitClient.retrofit.create(ClassService::class.java)
+    private lateinit var classService: ClassService
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,6 +40,7 @@ class ClrStudentFragment : Fragment(), AllClassAdapter.OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        classService = RetrofitClient.instance(requireContext()).create(ClassService::class.java)
         val joinedClassFragment = ClassJoinedFragment()
         var allClassFragment = AllClassFragment()
 

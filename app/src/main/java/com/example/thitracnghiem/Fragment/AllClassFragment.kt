@@ -24,7 +24,7 @@ import retrofit2.Response
 
 class AllClassFragment : Fragment(), AllClassAdapter.OnItemClickListener {
 
-    private val classService = RetrofitClient.retrofit.create(ClassService::class.java)
+    private lateinit var classService: ClassService
     private lateinit var rcvAllClass : RecyclerView
     private lateinit var textView: TextView
     private var student_id = 0
@@ -41,6 +41,7 @@ class AllClassFragment : Fragment(), AllClassAdapter.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        classService = RetrofitClient.instance(requireContext()).create(ClassService::class.java)
         textView = view.findViewById(R.id.tv_allclass)
         rcvAllClass = view.findViewById(R.id.rcvAllClass)
         rcvAllClass.layoutManager = LinearLayoutManager(context)

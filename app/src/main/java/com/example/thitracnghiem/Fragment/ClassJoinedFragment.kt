@@ -49,7 +49,7 @@ class ClassJoinedFragment : Fragment(), JoinedClassAdapter.OnItemClickListener {
     }
 
     private fun getJoinedClasses(student_id: Int) {
-        val classService = RetrofitClient.retrofit.create(ClassService::class.java)
+        val classService = RetrofitClient.instance(requireContext()).create(ClassService::class.java)
         classService.getJoinedClass(student_id).enqueue(object : Callback<List<ClassItem>> {
             override fun onResponse(call: Call<List<ClassItem>>, response: Response<List<ClassItem>>) {
                 if (response.isSuccessful) {

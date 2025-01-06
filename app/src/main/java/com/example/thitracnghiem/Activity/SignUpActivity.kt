@@ -39,7 +39,7 @@ class SignUpActivity : AppCompatActivity() {
 
             if (email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && role != 0) {
                 if (password == confirmPassword) {
-                    val apiService = RetrofitClient.retrofit.create(AuthService::class.java)
+                    val apiService = RetrofitClient.instance(this).create(AuthService::class.java)
                     val registration = UserRegister(username, email, phoneNumber, password, role)
                     Log.d("abc", "test 1")
                     apiService.registerUser(registration).enqueue(object : Callback<RegisterResponse> {

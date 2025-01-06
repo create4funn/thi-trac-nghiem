@@ -46,7 +46,7 @@ class UpdateAccountActivity : AppCompatActivity() {
     }
 
     private fun updateProfile(userItemRequest: UserItem) {
-        val authService = RetrofitClient.retrofit.create(AuthService::class.java)
+        val authService = RetrofitClient.instance(this).create(AuthService::class.java)
         authService.updateProfile(userItem.user_id!!, userItemRequest).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if(response.isSuccessful){

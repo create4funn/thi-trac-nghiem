@@ -39,13 +39,14 @@ class CreateClassActivity : AppCompatActivity() {
     private lateinit var cardView2: CardView
     private lateinit var btnCreateClass: Button
     private var selectedImageUri: Uri? = null
-    private val classService = RetrofitClient.retrofit.create(ClassService::class.java)
+    private lateinit var classService: ClassService
     private lateinit var classItem : ClassItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_class)
 
+        classService = RetrofitClient.instance(this).create(ClassService::class.java)
         // check = true là tạo , false là sửa
         val check = intent.getBooleanExtra("check", false)
         if(!check){

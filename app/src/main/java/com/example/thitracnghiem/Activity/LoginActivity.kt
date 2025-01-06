@@ -18,13 +18,13 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    val apiService = RetrofitClient.retrofit.create(AuthService::class.java)
+    private lateinit var apiService: AuthService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        apiService = RetrofitClient.instance(this).create(AuthService::class.java)
         binding.btnLogin.setOnClickListener {
             val email = binding.etLoginEmail.text.toString()
             val password = binding.etLoginPass.text.toString()
@@ -81,8 +81,14 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+
         binding.tvRegisterHere.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnForgotPassword.setOnClickListener {
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
             startActivity(intent)
         }
     }

@@ -60,7 +60,7 @@ class JoinRequestActivity : AppCompatActivity(), JoinRequestAdapter.OnItemClickL
     private fun respond(student_id: Int, response: Int) {
         val joinResponse = JoinResponse(classroom_id, student_id, response)
 
-        val apiService = RetrofitClient.retrofit.create(ClassService::class.java)
+        val apiService = RetrofitClient.instance(this).create(ClassService::class.java)
 
         apiService.respondJoinRequest(joinResponse).enqueue(object : Callback<Void>{
             override fun onResponse(call: Call<Void>, response: Response<Void>) {

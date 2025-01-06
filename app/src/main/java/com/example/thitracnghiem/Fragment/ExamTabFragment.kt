@@ -61,7 +61,7 @@ class ExamTabFragment : Fragment(), ExamAdapter.OnItemClickListener {
     }
 
     private fun fetchExams() {
-        val examService = RetrofitClient.retrofit.create(ExamService::class.java)
+        val examService = RetrofitClient.instance(requireContext()).create(ExamService::class.java)
         examService.getExamsByClass(classItem.classroom_id!!).enqueue(object : Callback<List<ExamItem>> {
             override fun onResponse(call: Call<List<ExamItem>>, response: Response<List<ExamItem>>) {
                 if (response.isSuccessful) {

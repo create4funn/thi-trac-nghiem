@@ -93,7 +93,7 @@ class ClassManagerActivity : AppCompatActivity() {
     }
 
     private fun getMember(){
-        val classService = RetrofitClient.retrofit.create(ClassService::class.java)
+        val classService = RetrofitClient.instance(this).create(ClassService::class.java)
         classService.getMember(classItem.classroom_id!!).enqueue(object : Callback<List<UserItem>> {
             override fun onResponse(call: Call<List<UserItem>>, response: Response<List<UserItem>>) {
                 if (response.isSuccessful) {

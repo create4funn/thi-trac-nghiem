@@ -193,7 +193,7 @@ class DoExam2Activity : AppCompatActivity() {
     }
 
     private fun getQuestionApi(examId: Int) {
-        val questionService = RetrofitClient.retrofit.create(QuestionService::class.java)
+        val questionService = RetrofitClient.instance(this).create(QuestionService::class.java)
         questionService.getQuestionsByExamId(examId).enqueue(object : Callback<List<QuestionItem>> {
             override fun onResponse(
                 call: Call<List<QuestionItem>>,
@@ -232,7 +232,7 @@ class DoExam2Activity : AppCompatActivity() {
             user_id = user_id.toInt()
         )
 
-        val historyService = RetrofitClient.retrofit.create(HistoryService::class.java)
+        val historyService = RetrofitClient.instance(this).create(HistoryService::class.java)
 
         historyService.saveExamHistory(historyRequest).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
